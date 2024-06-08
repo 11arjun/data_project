@@ -66,10 +66,19 @@ for column in numerical_columns:
     short_data[column] = (short_data[column] - min_value) / (max_value - min_value)
 #displaying continuous normalized dataset
 continiuous_normalized = short_data[numerical_columns]
-# print(continuous_normalized)
+# print("continuious Normalizied ",continiuous_normalized)
 # print(short_data)
 # calculating the manhattan distance for each continuous Attributes
 Manhattan_distance = manhattan_distances(continiuous_normalized)
 print("\n Manhattan Distance Matrix for Continuous Attributes:")
 print(Manhattan_distance)
-# Now Let's combine
+# Inverting  the Manhattan distance to represent similarity
+manhattan_similarity = 1 - Manhattan_distance / Manhattan_distance.max()
+# Combining similarity of all attributes
+combined_similarity = (manhattan_similarity + nominal_similarity_df.values ) / 2
+print("\n Combined Similarity Matrix: \n" , combined_similarity)
+# Convert combined_sim to a DataFrame
+combined_similarity_df = pd.DataFrame(combined_similarity, index=short_data.index, columns=short_data.index)
+#Writing the combined similarity matrix to a CSV file
+combined_similarity_df.to_csv('combined_similarity_matrix.csv', index=False)
+print("\nCombined Similarity Matrix has been written to 'combined_similarity_matrix.csv'")
