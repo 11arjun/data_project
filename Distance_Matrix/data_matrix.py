@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import manhattan_distances
 from sklearn.preprocessing import LabelEncoder
-from scipy.spatial.distance import hamming
 
 # Loading the dataset
 Datas= pd.read_csv('bank.csv',sep=';')
@@ -48,6 +47,10 @@ for i in range(nominal_encoded_data.shape[0]):
 nominal_similarity_df = pd.DataFrame(similarity_matrix, index=short_data.index, columns=short_data.index)
 #displaying the Similarity Matrix for Nominal Attributes
 print("\nSimilarity Matrix for Nominal Attributes (Label Encoded):\n" , nominal_similarity_df)
+# Calculating nominal distance from similarity
+nominal_distance_matrix = 1 - nominal_similarity_df
+print("\nNominal Distance Matrix (Exact Match):\n", nominal_distance_matrix)
+
 # Identifying  numerical columns
 numerical_columns = short_data.select_dtypes(include=[np.number]).columns.tolist()
 # print("Continuous  Attributes \n ",  numerical_columns)
@@ -72,12 +75,12 @@ continiuous_normalized = short_data[numerical_columns]
 Manhattan_distance = manhattan_distances(continiuous_normalized)
 print("\n Manhattan Distance Matrix for Continuous Attributes:")
 print(Manhattan_distance)
-# Inverting  the Manhattan distance to represent similarity
+# Inverting  the Manhattan distance to represent similarity, calculating similarity matrix from  distance matrix
 manhattan_similarity = 1 - Manhattan_distance / Manhattan_distance.max()
 # Combining similarity of all attributes
 combined_similarity = (manhattan_similarity + nominal_similarity_df.values ) / 2
 print("\n Combined Similarity Matrix: \n" , combined_similarity)
-# Convert combined_sim to a DataFrame
+# Convert combined_similarity to a DataFrame
 combined_similarity_df = pd.DataFrame(combined_similarity, index=short_data.index, columns=short_data.index)
 #Writing the combined similarity matrix to a CSV file
 combined_similarity_df.to_csv('combined_similarity_matrix.csv', index=False)
